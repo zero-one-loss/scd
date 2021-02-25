@@ -367,7 +367,7 @@ if __name__ == '__main__':
     #
     #     Layer(layer_type='nn.Conv2d', in_channel=3,
     #           out_channel=16, kernel_size=3, padding=1, bias=True,
-    #            pool_size=2, act='relu', pool_type='avg', scale=True),
+    #            pool_size=2, act='msign', pool_type='avg', scale=True),
     #     Layer(layer_type='nn.Conv2d', in_channel=16,
     #           out_channel=32, kernel_size=3, padding=1, bias=True,
     #           pool_size=2, act='relu', pool_type='avg', scale=True),
