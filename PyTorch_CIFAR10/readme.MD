@@ -13,7 +13,7 @@ Files
 
 -   `bce_attack_mx.py` CNN models (BCE loss and sigmoid output for binary classification)
 
-        python bce_attack_mx.py --epsilon 8 --num-steps 10 --n_classes 2 --attack_type pgd
+        python bce_attack_mx.py --epsilon 16 --num-steps 10 --n_classes 2 --attack_type pgd
 
 
 -   `pgd_attack_mx.py` CNN models (CE loss and softmax output for multi-class classification)

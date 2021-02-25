@@ -25,3 +25,7 @@ pandas v1.0.3
 argparse v1.1
 
 sklearn v0.21.2
+
+advertorch v0.2 (https://github.com/BorealisAI/advertorch)
+
+ART v1.4.0 (https://github.com/Trusted-AI/adversarial-robustness-toolbox)
