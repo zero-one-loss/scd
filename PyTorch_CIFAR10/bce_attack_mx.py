@@ -50,26 +50,27 @@ def evaluation(data_loader, use_cuda, net, correct_index=None):
     correct = 0
     yp = []
     label = []
-    for batch_idx, (data, target) in enumerate(data_loader):
-        if use_cuda:
-            data, target = data.cuda(), target.cuda()
-        # data = data.transpose(1, 3).reshape((data.size(0), -1))
-        outputs = net(data).flatten()
-        # print(outputs.shape)
-        outputs = outputs.round()
-        yp.append(outputs)
-        label.append(target)
-        correct += outputs.eq(target).sum().item()
+    with torch.no_grad():
+        for batch_idx, (data, target) in enumerate(data_loader):
+            if use_cuda:
+                data, target = data.cuda(), target.cuda()
+            # data = data.transpose(1, 3).reshape((data.size(0), -1))
+            outputs = net(data).flatten()
+            # print(outputs.shape)
+            outputs = outputs.round()
+            yp.append(outputs)
+            label.append(target)
+            correct += outputs.eq(target).sum().item()
 
-    yp = torch.cat(yp, dim=0)
-    label = torch.cat(label, dim=0)
-    acc = (yp == label).float()
-    if correct_index is not None:
-        acc = acc[correct_index].mean().item()
-    else:
-        acc = acc.mean().item()
-    print("Accuracy: {:.5f}, "
-          "cost {:.2f} seconds".format(acc, time.time() - a))
+        yp = torch.cat(yp, dim=0)
+        label = torch.cat(label, dim=0)
+        acc = (yp == label).float()
+        if correct_index is not None:
+            acc = acc[correct_index].mean().item()
+        else:
+            acc = acc.mean().item()
+        print("Accuracy: {:.5f}, "
+              "cost {:.2f} seconds".format(acc, time.time() - a))
 
     return yp.cpu(), (yp == label).cpu(), acc
 
