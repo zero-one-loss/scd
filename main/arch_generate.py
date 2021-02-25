@@ -376,7 +376,7 @@ if __name__ == '__main__':
     #           reshape=True, pool_size=2, act='relu',
     #           pool_type='avg', scale=True),
     #     Layer(layer_type='nn.Linear', in_channel=64 * 4 * 4,
-    #           out_channel=100, bias=True, act='relu', scale=True),
+    #           out_channel=100, bias=True, act='relu', scale=False),
     #     Layer(layer_type='nn.Linear', in_channel=100,
     #           out_channel='num_classes', bias=True, act='relu'),
     # ]

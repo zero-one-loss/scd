@@ -7,36 +7,13 @@ Guide
 -   `train_cnn01_01.py` Script for binary classification.
 -   `train_cnn01_abp_ce.py` Script for multi classes classification.
 
-Flow path
+Flow path and examples
 -
 
--   Generate structure code
--   Train model
--   Combine votes
-
-
-Examples
--
-
--   Binary classification
-
-        python train_cnn01.py --nrows 0.75 --localit 1 --updated_conv_features 32 --updated_fc_features 128 --updated_fc_nodes 1 --updated_conv_nodes 1 --width 100 --normalize 1 --percentile 1 --fail_count 1 --loss bce --act sign --fc_diversity 1 --init normal --no_bias 0 --scale 1 --w-inc1 0.17 --w-inc2 0.2 --version fc --seed 0 --iters 1000 --dataset cifar10 --n_classes 2 --cnn 0 --divmean 0 --target cifar10_fc_sign_i1_bce_nb0_nw1_dm0_s1_fp32_32_0.pkl --updated_fc_ratio 1 --updated_conv_ratio 1
-
-
--   Multiple classes classification
-
-        python train_cnn01_ce.py --nrows 0.03 --localit 1 --updated_conv_features 32 --updated_fc_features 128 --updated_fc_nodes 1 --updated_conv_nodes 1 --width 100 --normalize 0 --percentile 1 --fail_count 1 --loss mce --act sign --fc_diversity 1 --init normal --no_bias 1 --scale 2 --w-inc1 0.3 --w-inc2 0.2 --version toy2 --seed 0 --iters 20000 --dataset cifar10 --n_classes 10 --cnn 1 --divmean 0 --target cifar10_toy2_sign_i1_mce_nb1_nw0_dm0_s2_fp32_32_0.pkl --updated_fc_ratio 1 --updated_conv_ratio 1
-
--   Combine votes
-
-    - Binary
-    
-            python combine_vote.py --dataset cifar10 --n_classes 2 --votes 32 --scale 1 --version fc --act sign --target cifar10_fc_sign_i1_bce_nb0_nw1_dm0_s1_fp32_32
-        
-    - Multiple classes
-            
-            Todo
-    
+-   1.[Generate structure code](../examples/network_architecture_define.ipynb)
+-   2.[Train model](../examples/training_with_scd.ipynb)
+-   3.Combine votes
+-   4.[PGD attack](../PyTorch_CIFAR10)
    
 
 Parameters for training script
