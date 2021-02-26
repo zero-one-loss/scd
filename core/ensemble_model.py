@@ -2388,7 +2388,7 @@ arch['mlp01scale'] = mlp01scale
 
 arch['mlp2srscale'] = mlp2srscale
 arch['mlp2ssscale'] = mlp2ssscale
-arch['mlp2rr'] = mlp2rr
+
 if __name__ == '__main__':
     x = torch.rand(size=(1000, 3, 32, 32))
     # x = torch.rand(size=(1000, 3072))
