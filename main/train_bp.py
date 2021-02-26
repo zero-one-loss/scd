@@ -6,7 +6,7 @@ import torchvision.transforms as transforms
 import os
 import sys
 sys.path.append('..')
-from core.cnn import Toy2, Toy3, Toy3BN
+from core.cnn import *
 from tools import args
 import time
 import numpy as np
@@ -28,16 +28,18 @@ resume = False
 use_cuda = True
 fp16 = True if args.fp16 else False
 dtype = torch.float16 if fp16 else torch.float32
-
+save = True if args.save else False
 
 
 best_acc = 0
 
-batch_size = 128
+batch_size = 256
 aug = args.aug
 seed = args.seed
+np.random.seed(seed)
 print('Random seed: ', seed)
 torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
 save_path = 'checkpoints/pt'
 if not os.path.isdir('logs'):
     os.mkdir('logs')
@@ -71,19 +73,21 @@ print('start normalize')
 trainset = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True, transform=train_transform)
 testset = torchvision.datasets.CIFAR10(root=test_dir, train=False, download=True, transform=test_transform)
 
-# train_idx = [True if i < args.n_classes else False for i in trainset.targets]
-# test_idx = [True if i < args.n_classes else False for i in testset.targets]
-#
-# trainset.data = trainset.data[train_idx]
-# testset.data = testset.data[test_idx]
-# trainset.targets = [i for i in trainset.targets if i < args.n_classes]
-# testset.targets = [i for i in testset.targets if i < args.n_classes]
+train_idx = [True if i < args.n_classes else False for i in trainset.targets]
+test_idx = [True if i < args.n_classes else False for i in testset.targets]
+
+trainset.data = trainset.data[train_idx]
+testset.data = testset.data[test_idx]
+trainset.targets = [i for i in trainset.targets if i < args.n_classes]
+testset.targets = [i for i in testset.targets if i < args.n_classes]
 
 train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True)
 
-net = Toy3(num_classes=10, bias=False)
+# net = Toy3ap1(num_classes=args.n_classes, bias=bool(1-args.no_bias))
 
+# net = Toy3(num_classes=args.n_classes, bias=bool(1-args.no_bias))
+net = arch[args.version](num_classes=10, act='sign', sigmoid=False, softmax=True, scale=1, bias=bool(1-args.no_bias))
 criterion = nn.CrossEntropyLoss()
 
 if resume:
@@ -95,7 +99,7 @@ if resume:
 
 if use_cuda:
     print('start move to cuda')
-    torch.cuda.manual_seed_all(seed)
+
     cudnn.benchmark = True
     if fp16:
         net = net.half()
@@ -114,10 +118,11 @@ if use_cuda:
 #     net.parameters(),
 #     lr=0.01,
 #     momentum=0.9,
-#     weight_decay=0.0001,
+#     weight_decay=0.0005,
 #     nesterov=True
 # )
-optimizer = optim.Adam(net.parameters(), lr=0.001, eps=1e-4 if fp16 else 1e-8)
+optimizer = optim.Adam(net.parameters(), lr=0.01, eps=1e-4 if fp16 else 1e-8)
+# scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 def train(epoch):
     # global monitor
@@ -162,7 +167,7 @@ def test(epoch):
             if use_cuda:
                 data, target = data.to(device=device, dtype=dtype), target.to(device=device)
 
-            outputs= net(data)
+            outputs= net(data).float()
             loss = criterion(outputs, target)
 
             test_loss += loss.item() * target.size(0)
@@ -174,7 +179,7 @@ def test(epoch):
         print('This epoch cost %0.2f seconds' % (time.time() - a))
 
     acc = correct / len(test_loader.dataset)
-    if acc > best_acc:
+    if acc > best_acc and save:
         print('Saving...')
         # state = {
         #     # 'net': net.module.state_dict(),
@@ -220,6 +225,7 @@ def main():
         csv_logger.writerow(row)
 
         print('Learning rate: %f' % optimizer.param_groups[0]['lr'])
+        # scheduler.step()
         # if epoch in [60, 120, 160]:
         #     optimizer.param_groups[0]['lr'] *= 0.1
 
@@ -250,8 +256,13 @@ def predict():
     np.save('resnet%s_prob.npy'%sys.argv[1], train_prob)
 
 def inference():
-    test(0)
+    print('Load best weights')
+    net.load_state_dict(torch.load(os.path.join(save_path, f'{args.target}.pt')))
+    test(101)
+
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
-
+    end_time = time.time()
+    print('Cost %.1f seconds' % (end_time - start_time))
