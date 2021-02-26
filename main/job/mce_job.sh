@@ -77,7 +77,7 @@ done
 
 # combine votes
 
-python combine_vote_new.py --dataset cifar10 --n_classes 10 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3rrr100 --act sign --target cifar10_toy3rrr100_nb2_mce_bp_0 --save
+python combine_vote_new.py --dataset cifar10 --n_classes 10 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3rrr100 --act sign --target cifar10_toy3rrr100_nb2_mce_bp --save
 
 python combine_vote_new.py --dataset cifar10 --n_classes 10 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_toy3srr100scale_nb2_mce_bp --save
 python combine_vote_new.py --dataset cifar10 --n_classes 10 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_toy3ssr100scale_nb2_mce_bp --save
