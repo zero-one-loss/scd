@@ -12,9 +12,15 @@ Flow path and examples
 
 -   1.[Generate structure code](../examples/network_architecture_define.ipynb)
 -   2.[Train model](../examples/training_with_scd.ipynb)
--   3.Combine votes
--   4.[PGD attack](../PyTorch_CIFAR10)
+-   3.[Train BAN model](../examples/train_ste_ban.ipynb)
+-   4.[Combine votes](../examples/combine_votes.ipynb)
+-   5.[PGD attack](../PyTorch_CIFAR10)
    
+Example shell scripts are in `job`
+
+[bce job](job/bce_job.sh)
+
+[mce job](job/mce_job.sh)
 
 Parameters for training script
 -
