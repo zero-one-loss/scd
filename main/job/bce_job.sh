@@ -88,31 +88,32 @@ done
 
 
 # combine votes
+votes=8
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3rrr100 --act sign --target cifar10_binary_toy3rrr100_nb2_bce_bp --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3rrr100 --act sign --target cifar10_binary_toy3rrr100_nb2_bce_bp --save
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_nb2_bce_bp --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_nb2_bce_bp --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_nb2_bce_bp --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_nb2_bce_bp --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_nb2_bce_bp --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_nb2_bce_bp --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_nb2_bce_bp --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_nb2_bce_bp --save
 
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_sign_i1_bce_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_sign_i1_bce_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_sign_i1_bce_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_sign_i1_bce_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_sign_i1_bce_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_sign_i1_bce_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_sign_i1_bce_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_sign_i1_bce_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_sign_i1_01loss_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_sign_i1_01loss_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_sign_i1_01loss_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_sign_i1_01loss_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_sign_i1_01loss_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_sign_i1_01loss_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_sign_i1_01loss_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_sign_i1_01loss_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_adv_sign_i1_bce_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_adv_sign_i1_bce_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_adv_sign_i1_bce_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_adv_sign_i1_bce_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_adv_sign_i1_bce_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_adv_sign_i1_bce_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_adv_sign_i1_bce_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_adv_sign_i1_bce_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
 
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_adv_sign_i1_01loss_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_adv_sign_i1_01loss_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_adv_sign_i1_01loss_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
-python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes 8 --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_adv_sign_i1_01loss_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3srr100scale --act sign --target cifar10_binary_toy3srr100scale_abp_adv_sign_i1_01loss_b200_lrc0.025_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssr100scale --act sign --target cifar10_binary_toy3ssr100scale_abp_adv_sign_i1_01loss_b200_lrc0.025_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3sss100scale --act sign --target cifar10_binary_toy3sss100scale_abp_adv_sign_i1_01loss_b200_lrc0.05_lrf0.05_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
+python combine_vote_mlp.py --dataset cifar10 --n_classes 2 --votes ${votes} --no_bias 1 --scale 1 --cnn 1 --version toy3ssss100scale --act sign --target cifar10_binary_toy3ssss100scale_abp_adv_sign_i1_01loss_b200_lrc0.05_lrf0.7_nb2_nw0_dm0_upc1_upf1_ucf32_normal --save
