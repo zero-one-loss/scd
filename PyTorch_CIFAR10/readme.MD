@@ -20,6 +20,12 @@ Files
 
         python pgd_attack_mx.py --epsilon 8 --num-steps 10 --n_classes 10 --attack_type pgd
 
+-   `evaluation_gaussian_noise.py` Gaussian noise attack for binary classification models.
+        
+        python evaluation_gaussian_noise.py --dataset cifar10 --n_classes 2 --epsilon 0.2 --seed 0 --cnn 1
+        
+        python evaluation_gaussian_noise.py --dataset cifar10 --n_classes 2 --epsilon 0.5 --seed 0 --cnn 1
+
 Notes
 -
 
