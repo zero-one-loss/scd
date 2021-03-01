@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 from torch.nn import BCELoss as bceloss
 from torch.nn import NLLLoss as nllloss
+from torch.nn import CrossEntropyLoss as celoss
 
 class ZeroOneLoss(nn.Module):
     """Zero-One-Loss
@@ -18,8 +19,9 @@ class ZeroOneLoss(nn.Module):
 
         return
 
-    def forward(self, inputs, target):
+    def forward(self, inputs_, target):
 
+        inputs = F.relu(inputs_.sign())
         while len(target.size()) < len(inputs.size()) - 1:
             target = target.unsqueeze(dim=1)
         inputs = inputs.squeeze(dim=-1)
@@ -68,6 +70,10 @@ class BCELoss(nn.Module):
 
         return
 
+    def _bce(self, x):
+
+        return F.binary_cross_entropy_with_logits(x, reduction='none')
+
     def forward(self, inputs, target):
         """
 
@@ -80,16 +86,19 @@ class BCELoss(nn.Module):
 
         # loss_group = criterion(yp, torch.stack([target for i in range(yp.size(1))], dim=1).type_as(yp).unsqueeze(dim=-1))
         # loss_group = loss_group.mean(dim=0).squeeze()
-        bce = bceloss(reduction='none')
+        # bce = bceloss(reduction='none')
+
         if len(inputs.size()) == 4:
-            loss = bce(inputs, torch.stack(
+            loss = self._bce(inputs, torch.stack(
                 [torch.stack(
                     [target for i in range(inputs.size(1))], dim=1) for j in range(inputs.size(2))],
                  dim=2).type_as(inputs).unsqueeze(dim=-1))
         elif len(inputs.size()) == 3:
-            loss = bce(inputs, torch.stack([target for i in range(inputs.size(1))], dim=1).type_as(inputs).unsqueeze(dim=-1))
+            loss = self._bce(inputs,
+                             torch.stack([target for i in range(inputs.size(1))],
+                                         dim=1).type_as(inputs).unsqueeze(dim=-1))
         elif len(inputs.size()) == 2:
-            loss = bce(inputs, target.type_as(inputs).unsqueeze(dim=-1))
+            loss = self._bce(inputs, target.type_as(inputs).unsqueeze(dim=-1))
         return loss.mean(dim=0).squeeze(dim=-1)
 
 
@@ -111,16 +120,17 @@ class CrossEntropyLoss(nn.Module):
         :return:
         """
 
-        ce = nllloss(reduction='none')
+        # ce = nllloss(reduction='none')
+        ce = celoss(reduction='None')
         if len(inputs.size()) == 4:
-            loss = ce(inputs.permute(0, 3, 1, 2).log(), torch.stack(
+            loss = ce(inputs.permute(0, 3, 1, 2), torch.stack(
                 [torch.stack(
                     [target for i in range(inputs.size(1))], dim=1) for j in range(inputs.size(2))],
                  dim=2))
         elif len(inputs.size()) == 3:
-            loss = ce(inputs.permute(0, 2, 1).log(), torch.stack([target for i in range(inputs.size(1))], dim=1))
+            loss = ce(inputs.permute(0, 2, 1), torch.stack([target for i in range(inputs.size(1))], dim=1))
         elif len(inputs.size()) == 2:
-            loss = ce(inputs.log(), target)
+            loss = ce(inputs, target)
         return loss.mean(dim=0)
 
 class ZeroOneLossMC(nn.Module):
@@ -138,8 +148,8 @@ class ZeroOneLossMC(nn.Module):
 
         return
 
-    def forward(self, inputs, target):
-
+    def forward(self, inputs_, target):
+        inputs = F.relu(inputs_.sign())
         if len(inputs.size()) == 4:
             loss = torch.eq(inputs.argmax(dim=-1), torch.stack(
                 [torch.stack(
@@ -154,35 +164,35 @@ class ZeroOneLossMC(nn.Module):
 
 
 
-# class ZeroOneLossMC(nn.Module):
-#     """Zero-One-Loss
-#     Balanced or non-balanced
-#     Version: V1.0
-#     """
-#
-#     def __init__(self, kind='balanced', num_classes=10):
-#         super(ZeroOneLossMC, self).__init__()
-#         self.kind = kind
-#         self.n_classes = num_classes
-#
-#         return
-#
-#     def forward(self, inputs, target):
-#         # inputs.float()
-#
-#         inputs_onehot = inputs
-#         if len(inputs_onehot.size()) == 4:
-#             inputs_onehot = inputs_onehot.permute(0, 3, 1, 2)
-#         if len(inputs_onehot.size()) == 3:
-#             inputs_onehot = inputs_onehot.permute(0, 2, 1)
-#         target_onehot = F.one_hot(target, num_classes=self.n_classes)
-#         while len(target_onehot.size()) < len(inputs_onehot.size()):
-#             target_onehot.unsqueeze_(dim=-1)
-#         # match = (inputs_onehot + target_onehot) // 2
-#         # loss = 1 - (match.sum(dim=0) / target_onehot.sum(dim=0).float()).mean()
-#         mis_match = (inputs_onehot - target_onehot).abs()
-#         loss = mis_match.mean(dim=1).mean(dim=0)
-#         return loss
+class L1MC(nn.Module):
+    """Zero-One-Loss
+    Balanced or non-balanced
+    Version: V1.0
+    """
+
+    def __init__(self, kind='balanced', num_classes=10):
+        super(L1MC, self).__init__()
+        self.kind = kind
+        self.n_classes = num_classes
+
+        return
+
+    def forward(self, inputs_, target):
+        # inputs.float()
+        inputs = F.relu(inputs_.sign())
+        inputs_onehot = inputs
+        if len(inputs_onehot.size()) == 4:
+            inputs_onehot = inputs_onehot.permute(0, 3, 1, 2)
+        if len(inputs_onehot.size()) == 3:
+            inputs_onehot = inputs_onehot.permute(0, 2, 1)
+        target_onehot = F.one_hot(target, num_classes=self.n_classes)
+        while len(target_onehot.size()) < len(inputs_onehot.size()):
+            target_onehot.unsqueeze_(dim=-1)
+        # match = (inputs_onehot + target_onehot) // 2
+        # loss = 1 - (match.sum(dim=0) / target_onehot.sum(dim=0).float()).mean()
+        mis_match = (inputs_onehot - target_onehot).abs().float()
+        loss = mis_match.mean(dim=1).mean(dim=0)
+        return loss
 
 
 class ZeroOneLossModified(nn.Module):
@@ -198,9 +208,9 @@ class ZeroOneLossModified(nn.Module):
 
         return
 
-    def forward(self, inputs, target):
+    def forward(self, inputs_, target):
         # inputs.float()
-
+        inputs = F.relu(inputs_.sign())
         inputs_onehot = inputs
         if len(inputs_onehot.size()) == 4:
             inputs_onehot = inputs_onehot.permute(0, 3, 1, 2)
@@ -360,6 +370,7 @@ criterion['mce'] = CrossEntropyLoss
 criterion['01loss'] = ZeroOneLoss
 criterion['bce'] = BCELoss
 criterion['01lossmc'] = ZeroOneLossMC
+criterion['l1mc'] = L1MC
 
 if __name__ == '__main__':
     import torch.nn as nn
