@@ -9,7 +9,7 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
 sys.path.append('..')
 
-from tools import args, load_data, ModelArgs, BalancedBatchSampler, print_title, MultiClassSampler, MultiClassSampler2
+from tools import args, load_data, get_set, ModelArgs, BalancedBatchSampler, print_title, MultiClassSampler, MultiClassSampler2
 from core.lossfunction import *
 from core.cnn01 import *
 from core.basic_module import *
@@ -21,8 +21,8 @@ import torchvision.transforms as transforms
 from core.src.attack.fast_gradient_sign_untargeted import FastGradientSignUntargeted
 torch.autograd.set_detect_anomaly(True)
 
-def train_single_cnn01(scd_args, device=None, seed=None, data_set=None, fined_train_label=None,
-                       target_class=None):
+def train_single_cnn01(scd_args, device=None, seed=None, data_set=None,
+                       trainset_=None):
 
     start_time_ = time.time()
     if device is not None:
@@ -53,32 +53,32 @@ def train_single_cnn01(scd_args, device=None, seed=None, data_set=None, fined_tr
         if scd_args.nrows < 1 else int(scd_args.nrows)
 
     if scd_args.bp_layer > 0:
-        train_dir = '/home/y/yx277/research/ImageDataset/cifar10'
-        test_dir = '/home/y/yx277/research/ImageDataset/cifar10'
-
-        train_transform = transforms.Compose(
-            [
-                transforms.RandomCrop(32, padding=4),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor(),
-            ])
-
-        test_transform = transforms.Compose(
-            [
-                transforms.ToTensor(),
-            ])
-
-        trainset_ = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True,
-                                                transform=train_transform if scd_args.aug == 1 else test_transform)
-
-
-        train_idx = [True if i < scd_args.num_classes else False for i in trainset_.targets]
-        # test_idx = [True if i < args.n_classes else False for i in testset.targets]
-
-        trainset_.data = trainset_.data[train_idx]
-        # testset.data = testset.data[test_idx]
-        trainset_.targets = [i for i in trainset_.targets if i < scd_args.num_classes]
-        # testset.targets = [i for i in testset.targets if i < args.n_classes]
+        # train_dir = '/home/y/yx277/research/ImageDataset/cifar10'
+        # test_dir = '/home/y/yx277/research/ImageDataset/cifar10'
+        #
+        # train_transform = transforms.Compose(
+        #     [
+        #         transforms.RandomCrop(32, padding=4),
+        #         transforms.RandomHorizontalFlip(),
+        #         transforms.ToTensor(),
+        #     ])
+        #
+        # test_transform = transforms.Compose(
+        #     [
+        #         transforms.ToTensor(),
+        #     ])
+        #
+        # trainset_ = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True,
+        #                                         transform=train_transform if scd_args.aug == 1 else test_transform)
+        #
+        #
+        # train_idx = [True if i < scd_args.num_classes else False for i in trainset_.targets]
+        # # test_idx = [True if i < args.n_classes else False for i in testset.targets]
+        #
+        # trainset_.data = trainset_.data[train_idx]
+        # # testset.data = testset.data[test_idx]
+        # trainset_.targets = [i for i in trainset_.targets if i < scd_args.num_classes]
+        # # testset.targets = [i for i in testset.targets if i < args.n_classes]
 
         train_loader_ = torch.utils.data.DataLoader(trainset_, batch_size=scd_args.batch_size, shuffle=True,
                                                    num_workers=0, pin_memory=True)
@@ -396,7 +396,7 @@ if __name__ == '__main__':
     et, vc = print_title()
     scd_args = ModelArgs()
 
-    scd_args.nrows = 200 / 50000
+    scd_args.nrows = 200 / 10000
     scd_args.nfeatures = 1
     scd_args.w_inc = 0.17
     scd_args.tol = 0.00000
@@ -418,15 +418,15 @@ if __name__ == '__main__':
     scd_args.b_ratio = 0.2
     scd_args.cuda = True
     scd_args.seed = 0
-    scd_args.target = 'toy3srr100'
+    scd_args.target = 'toy4srr100'
     scd_args.source = 'cifar10_toy3ssss100scale_adaptivebs_abp_sign_i1_mce_b200_lrc0.05_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal_fp16_1'
     scd_args.save = False
     scd_args.resume = False
-    scd_args.loss = 'l1mc'
+    scd_args.loss = 'mce'
     scd_args.criterion = criterion[scd_args.loss]
-    scd_args.structure = arch['toy3srr100scale']
-    scd_args.dataset = 'cifar10'
-    scd_args.num_classes = 10
+    scd_args.structure = arch['toy4srr100scale']
+    scd_args.dataset = 'stl10'
+    scd_args.num_classes = 2
     scd_args.gpu = 0
     scd_args.fp16 = True
     scd_args.act = 'relu'
@@ -467,7 +467,7 @@ if __name__ == '__main__':
     scd_args.epsilon = 0.314
     scd_args.step = 10
     scd_args.alpha = 0.00784
-    scd_args.bp_layer = 4
+    scd_args.bp_layer = 5
     scd_args.lr = 0.001
     scd_args.reinit = 0
     scd_args.bnn_layers = []
@@ -477,19 +477,24 @@ if __name__ == '__main__':
 
 
 
-    train_data, test_data, train_label, test_label = load_data('cifar10', scd_args.num_classes)
+    train_data, test_data, train_label, test_label = load_data(scd_args.dataset, scd_args.num_classes)
     if scd_args.cnn:
-        train_data = train_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
-        test_data = test_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+        if scd_args.dataset == 'cifar10':
+            train_data = train_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+            test_data = test_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+        elif scd_args.dataset == 'stl10':
+            train_data = train_data.reshape((-1, 96, 96, 3)).transpose((0, 3, 1, 2))
+            test_data = test_data.reshape((-1, 96, 96, 3)).transpose((0, 3, 1, 2))
     if scd_args.divmean:
         train_data = train_data / 0.5 - 1
         test_data = test_data / 0.5 - 1
     np.random.seed(scd_args.seed)
 
+    trainset_, testset_ = get_set(data=scd_args.dataset, aug=scd_args.aug, num_classes=scd_args.num_classes)
 
 
     best_model, val_acc = train_single_cnn01(
-        scd_args, None, None, (train_data, test_data, train_label, test_label))
+        scd_args, None, None, (train_data, test_data, train_label, test_label), trainset_)
 
 
 
