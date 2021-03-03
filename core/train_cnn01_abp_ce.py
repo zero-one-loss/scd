@@ -401,7 +401,7 @@ if __name__ == '__main__':
     scd_args.w_inc = 0.17
     scd_args.tol = 0.00000
     scd_args.local_iter = 1
-    scd_args.num_iters = 100
+    scd_args.num_iters = 1000
     scd_args.interval = 10
     scd_args.rounds = 1
     scd_args.w_inc1 = 0.025
@@ -422,7 +422,7 @@ if __name__ == '__main__':
     scd_args.source = 'cifar10_toy3ssss100scale_adaptivebs_abp_sign_i1_mce_b200_lrc0.05_lrf0.1_nb2_nw0_dm0_upc1_upf1_ucf32_normal_fp16_1'
     scd_args.save = False
     scd_args.resume = False
-    scd_args.loss = '01lossmc'
+    scd_args.loss = 'l1mc'
     scd_args.criterion = criterion[scd_args.loss]
     scd_args.structure = arch['toy3srr100scale']
     scd_args.dataset = 'cifar10'
@@ -456,7 +456,7 @@ if __name__ == '__main__':
     scd_args.save_path = os.path.join('../experiments/checkpoints', 'pt')
     scd_args.divmean = 0
     scd_args.cnn = 1
-    scd_args.verbose_iter = 1
+    scd_args.verbose_iter = 500
     scd_args.freeze_layer = 0
     scd_args.temp_save_per_iter = 0
     scd_args.lr_decay_iter = 0
