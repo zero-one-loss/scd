@@ -7,6 +7,80 @@ import torch
 import torchvision
 from torchvision import transforms
 
+def get_set(data=None, num_classes=10, aug=1):
+    """
+
+    :param data:
+    :param train_transform:
+    :param test_transform:
+    :param classes:
+    :return:
+    """
+
+    if data == 'mnist':
+        pass
+
+    elif data == 'cifar10':
+        train_dir = '/home/y/yx277/research/ImageDataset/cifar10'
+        test_dir = '/home/y/yx277/research/ImageDataset/cifar10'
+
+        train_transform = transforms.Compose(
+            [
+                transforms.RandomCrop(32, padding=4),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+            ])
+
+        test_transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+            ])
+
+        trainset = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True,
+                                                transform=train_transform if aug == 1 else test_transform)
+
+        testset = torchvision.datasets.CIFAR10(root=test_dir, train=False, download=True,
+                                               transform=test_transform)
+        train_idx = [True if i < num_classes else False for i in trainset.targets]
+        test_idx = [True if i < num_classes else False for i in testset.targets]
+
+        trainset.data = trainset.data[train_idx]
+        testset.data = testset.data[test_idx]
+        trainset.targets = [i for i in trainset.targets if i < num_classes]
+        testset.targets = [i for i in testset.targets if i < num_classes]
+
+
+    elif data == 'stl10':
+        train_dir = '/home/y/yx277/research/ImageDataset/stl10'
+        test_dir = '/home/y/yx277/research/ImageDataset/stl10'
+
+        train_transform = transforms.Compose(
+            [
+                transforms.RandomCrop(96, padding=12),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+            ])
+
+        test_transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+            ])
+
+        trainset = torchvision.datasets.STL10(root=train_dir, split='train', download=True,
+                                              transform=train_transform if aug == 1 else test_transform)
+        testset = torchvision.datasets.STL10(root=test_dir, split='test', download=True,
+                                             transform=test_transform)
+
+        train_idx = [True if i < num_classes else False for i in trainset.labels]
+        test_idx = [True if i < num_classes else False for i in testset.labels]
+        trainset.data = trainset.data[train_idx]
+        testset.data = testset.data[test_idx]
+        trainset.labels = [i for i in trainset.labels if i < num_classes]
+        testset.labels = [i for i in testset.labels if i < num_classes]
+
+
+    return trainset, testset
+
 
 def get_data(data=None):
 
