@@ -121,7 +121,7 @@ class CrossEntropyLoss(nn.Module):
         """
 
         # ce = nllloss(reduction='none')
-        ce = celoss(reduction='None')
+        ce = celoss(reduction='none')
         if len(inputs.size()) == 4:
             loss = ce(inputs.permute(0, 3, 1, 2), torch.stack(
                 [torch.stack(
@@ -148,8 +148,8 @@ class ZeroOneLossMC(nn.Module):
 
         return
 
-    def forward(self, inputs_, target):
-        inputs = F.relu(inputs_.sign())
+    def forward(self, inputs, target):
+
         if len(inputs.size()) == 4:
             loss = torch.eq(inputs.argmax(dim=-1), torch.stack(
                 [torch.stack(

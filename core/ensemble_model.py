@@ -2337,6 +2337,238 @@ class mlp2rr(nn.Module):
         return out
 
 
+class toy4rrr100(nn.Module):
+    def __init__(self, num_classes=2, act="sign", sigmoid=False, softmax=False, scale=1, votes=1, bias=True):
+        super(toy4rrr100, self).__init__()
+        self.votes = votes
+        self.num_classes = num_classes
+        if act == "sign":
+            self.act = torch.sign
+        elif act == "signb":
+            self.act = signb
+        elif act == "sigmoid":
+            self.act = torch.sigmoid_
+        elif act == "relu":
+            self.act = torch.relu_
+
+        if softmax:
+            if num_classes < 3:
+                raise ValueError("num_classes expect larger than 3, but got {num_classes}")
+            self.signb = softmax_
+        else:
+            self.signb = torch.sigmoid if sigmoid else signb
+
+        self.conv1_si = nn.Conv2d(3, 16 * votes, kernel_size=3, padding=1, bias=bias)
+        self.conv2_si = nn.Conv2d(16 * votes, 32 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv3_si = nn.Conv2d(32 * votes, 64 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv4_si = nn.Conv2d(64 * votes, 128 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.fc5_si = nn.Conv1d(votes, 100 * votes, kernel_size=4608, bias=bias, groups=votes)
+        self.fc6_si = nn.Conv1d(votes, num_classes * votes, kernel_size=100, bias=bias, groups=votes)
+        self.layers = ["conv1_si", "conv2_si", "conv3_si", "conv4_si", "fc5_si", "fc6_si"]
+
+    def forward(self, out):
+        out = self.conv1_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv2_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv3_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv4_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc5_si(out)
+        out = torch.relu_(out)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc6_si(out)
+        out = out.reshape((out.size(0), self.votes, self.num_classes))
+        if self.num_classes == 1:
+            out = self.signb(out).squeeze(dim=-1)
+            out = out.mean(dim=1).round()
+        else:
+            out = self.signb(out)
+            out = out.mean(dim=1).argmax(dim=-1)
+
+        return out
+
+
+class toy4srr100scale(nn.Module):
+    def __init__(self, num_classes=2, act="sign", sigmoid=False, softmax=False, scale=1, votes=1, bias=True):
+        super(toy4srr100scale, self).__init__()
+        self.votes = votes
+        self.num_classes = num_classes
+        if act == "sign":
+            self.act = torch.sign
+        elif act == "signb":
+            self.act = signb
+        elif act == "sigmoid":
+            self.act = torch.sigmoid_
+        elif act == "relu":
+            self.act = torch.relu_
+
+        if softmax:
+            if num_classes < 3:
+                raise ValueError("num_classes expect larger than 3, but got {num_classes}")
+            self.signb = softmax_
+        else:
+            self.signb = torch.sigmoid if sigmoid else signb
+
+        self.conv1_si = nn.Conv2d(3, 16 * votes, kernel_size=3, padding=1, bias=bias)
+        self.conv2_si = nn.Conv2d(16 * votes, 32 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv3_si = nn.Conv2d(32 * votes, 64 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv4_si = nn.Conv2d(64 * votes, 128 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.fc5_si = nn.Conv1d(votes, 100 * votes, kernel_size=4608, bias=bias, groups=votes)
+        self.fc6_si = nn.Conv1d(votes, num_classes * votes, kernel_size=100, bias=bias, groups=votes)
+        self.layers = ["conv1_si", "conv2_si", "conv3_si", "conv4_si", "fc5_si", "fc6_si"]
+
+    def forward(self, out):
+        out = self.conv1_si(out)
+        out = msign(out) * 0.0833
+        out = F.avg_pool2d(out, 2)
+        out = self.conv2_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv3_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv4_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc5_si(out)
+        out = torch.relu_(out)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc6_si(out)
+        out = out.reshape((out.size(0), self.votes, self.num_classes))
+        if self.num_classes == 1:
+            out = self.signb(out).squeeze(dim=-1)
+            out = out.mean(dim=1).round()
+        else:
+            out = self.signb(out)
+            out = out.mean(dim=1).argmax(dim=-1)
+
+        return out
+
+
+class toy4ssr100scale(nn.Module):
+    def __init__(self, num_classes=2, act="sign", sigmoid=False, softmax=False, scale=1, votes=1, bias=True):
+        super(toy4ssr100scale, self).__init__()
+        self.votes = votes
+        self.num_classes = num_classes
+        if act == "sign":
+            self.act = torch.sign
+        elif act == "signb":
+            self.act = signb
+        elif act == "sigmoid":
+            self.act = torch.sigmoid_
+        elif act == "relu":
+            self.act = torch.relu_
+
+        if softmax:
+            if num_classes < 3:
+                raise ValueError("num_classes expect larger than 3, but got {num_classes}")
+            self.signb = softmax_
+        else:
+            self.signb = torch.sigmoid if sigmoid else signb
+
+        self.conv1_si = nn.Conv2d(3, 16 * votes, kernel_size=3, padding=1, bias=bias)
+        self.conv2_si = nn.Conv2d(16 * votes, 32 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv3_si = nn.Conv2d(32 * votes, 64 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv4_si = nn.Conv2d(64 * votes, 128 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.fc5_si = nn.Conv1d(votes, 100 * votes, kernel_size=4608, bias=bias, groups=votes)
+        self.fc6_si = nn.Conv1d(votes, num_classes * votes, kernel_size=100, bias=bias, groups=votes)
+        self.layers = ["conv1_si", "conv2_si", "conv3_si", "conv4_si", "fc5_si", "fc6_si"]
+
+    def forward(self, out):
+        out = self.conv1_si(out)
+        out = msign(out) * 0.0833
+        out = F.avg_pool2d(out, 2)
+        out = self.conv2_si(out)
+        out = msign(out) * 0.0589
+        out = F.avg_pool2d(out, 2)
+        out = self.conv3_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = self.conv4_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc5_si(out)
+        out = torch.relu_(out)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc6_si(out)
+        out = out.reshape((out.size(0), self.votes, self.num_classes))
+        if self.num_classes == 1:
+            out = self.signb(out).squeeze(dim=-1)
+            out = out.mean(dim=1).round()
+        else:
+            out = self.signb(out)
+            out = out.mean(dim=1).argmax(dim=-1)
+
+        return out
+
+
+class toy4sss100scale(nn.Module):
+    def __init__(self, num_classes=2, act="sign", sigmoid=False, softmax=False, scale=1, votes=1, bias=True):
+        super(toy4sss100scale, self).__init__()
+        self.votes = votes
+        self.num_classes = num_classes
+        if act == "sign":
+            self.act = torch.sign
+        elif act == "signb":
+            self.act = signb
+        elif act == "sigmoid":
+            self.act = torch.sigmoid_
+        elif act == "relu":
+            self.act = torch.relu_
+
+        if softmax:
+            if num_classes < 3:
+                raise ValueError("num_classes expect larger than 3, but got {num_classes}")
+            self.signb = softmax_
+        else:
+            self.signb = torch.sigmoid if sigmoid else signb
+
+        self.conv1_si = nn.Conv2d(3, 16 * votes, kernel_size=3, padding=1, bias=bias)
+        self.conv2_si = nn.Conv2d(16 * votes, 32 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv3_si = nn.Conv2d(32 * votes, 64 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.conv4_si = nn.Conv2d(64 * votes, 128 * votes, kernel_size=3, padding=1, bias=bias, groups=votes)
+        self.fc5_si = nn.Conv1d(votes, 100 * votes, kernel_size=4608, bias=bias, groups=votes)
+        self.fc6_si = nn.Conv1d(votes, num_classes * votes, kernel_size=100, bias=bias, groups=votes)
+        self.layers = ["conv1_si", "conv2_si", "conv3_si", "conv4_si", "fc5_si", "fc6_si"]
+
+    def forward(self, out):
+        out = self.conv1_si(out)
+        out = msign(out) * 0.0833
+        out = F.avg_pool2d(out, 2)
+        out = self.conv2_si(out)
+        out = msign(out) * 0.0589
+        out = F.avg_pool2d(out, 2)
+        out = self.conv3_si(out)
+        out = msign(out) * 0.0417
+        out = F.avg_pool2d(out, 2)
+        out = self.conv4_si(out)
+        out = torch.relu_(out)
+        out = F.avg_pool2d(out, 2)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc5_si(out)
+        out = torch.relu_(out)
+        out = out.reshape((out.size(0), self.votes, -1))
+        out = self.fc6_si(out)
+        out = out.reshape((out.size(0), self.votes, self.num_classes))
+        if self.num_classes == 1:
+            out = self.signb(out).squeeze(dim=-1)
+            out = out.mean(dim=1).round()
+        else:
+            out = self.signb(out)
+            out = out.mean(dim=1).argmax(dim=-1)
+
+        return out
+
+
 arch = {}
 
 
@@ -2389,6 +2621,11 @@ arch['mlp01scale'] = mlp01scale
 arch['mlp2srscale'] = mlp2srscale
 arch['mlp2ssscale'] = mlp2ssscale
 
+
+arch['toy4rrr100'] = toy4rrr100
+arch['toy4srr100scale'] = toy4srr100scale
+arch['toy4ssr100scale'] = toy4ssr100scale
+arch['toy4sss100scale'] = toy4sss100scale
 if __name__ == '__main__':
     x = torch.rand(size=(1000, 3, 32, 32))
     # x = torch.rand(size=(1000, 3072))

@@ -70,7 +70,7 @@ def init_fc(net, data, layer, criterion, target, dtype, idx, scd_args):
         new_projection = new_p2.transpose_(0, 1).reshape((-1, n_nodes))  # n_bias * nrows * nodes
         del new_p2
         # get the final output, and reverse to original dimension order  nrows * n_bias * 1
-        yp = net(new_projection, input_=layer + '_ap').reshape(
+        yp = net(new_projection, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape(
             (n_variations, nrows, -1)).transpose_(0, 1)
         del new_projection
         yps.append(yp)
@@ -91,7 +91,7 @@ def init_fc(net, data, layer, criterion, target, dtype, idx, scd_args):
         new_projection = new_p2.transpose_(0, 1).reshape((-1, n_nodes))  # n_bias * nrows * nodes
         del new_p2
         # get the final output, and reverse to original dimension order  nrows * n_bias * 1
-        yp = net(new_projection, input_=layer + '_ap').reshape(
+        yp = net(new_projection, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape(
             (n_variations, nrows, -1)).transpose_(0, 1)
         del new_projection
         yps.append(yp)
@@ -217,7 +217,7 @@ def update_mid_layer_fc(net, layers, layer_index, data_, dtype, scd_args, criter
                 projection_batch = projection_batch.transpose_(0, 1).reshape(
                     (-1, projection_batch.size(2)))
                   # 1500
-                yp = net(projection_batch, input_=layer + '_ap').reshape((n_w * n_b, n_r, -1))
+                yp = net(projection_batch, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape((n_w * n_b, n_r, -1))
 
                 yp = yp.transpose_(0, 1).reshape((n_r, n_w, n_b, -1))
                 yps.append(yp)
@@ -232,7 +232,7 @@ def update_mid_layer_fc(net, layers, layer_index, data_, dtype, scd_args, criter
                 projection_batch = projection_batch.transpose_(0, 1).reshape(
                     (-1, projection_batch.size(2)))
                   # 1500
-                yp = net(projection_batch, input_=layer + '_ap').reshape((n_w * n_b, n_r, -1))
+                yp = net(projection_batch, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape((n_w * n_b, n_r, -1))
 
                 yp = yp.transpose_(0, 1).reshape((n_r, n_w, n_b, -1))
                 yps.append(yp)
@@ -275,7 +275,7 @@ def update_mid_layer_fc_nobias(net, layers, layer_index, data_, dtype, scd_args,
             net._modules[layer].bias[idx].zero_()
         except:
             pass
-        train_loss = criterion(net(data, input_=layer), target)
+        train_loss = criterion(net(data, input_=layer, layer=net.layers[-1]+'_projection'), target)
 
         if bnn:
             net._modules[layer].weight.data.sign_()
@@ -346,7 +346,7 @@ def update_mid_layer_fc_nobias(net, layers, layer_index, data_, dtype, scd_args,
                 n_r = projection_batch.size(0)
                 projection_batch = projection_batch.transpose_(0, 1).reshape(
                     (-1, projection_batch.size(2)))
-                yp = net(projection_batch, input_=layer + '_ap').reshape((n_w, n_r, -1))
+                yp = net(projection_batch, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape((n_w, n_r, -1))
 
                 yp = yp.transpose_(0, 1).reshape((n_r, n_w, -1))
                 yps.append(yp)
@@ -359,7 +359,7 @@ def update_mid_layer_fc_nobias(net, layers, layer_index, data_, dtype, scd_args,
                 n_r = projection_batch.size(0)
                 projection_batch = projection_batch.transpose_(0, 1).reshape(
                     (-1, projection_batch.size(2)))
-                yp = net(projection_batch, input_=layer + '_ap').reshape((n_w, n_r, -1))
+                yp = net(projection_batch, input_=layer + '_ap', layer=net.layers[-1]+'_projection').reshape((n_w, n_r, -1))
 
                 yp = yp.transpose_(0, 1).reshape((n_r, n_w, -1))
                 yps.append(yp)

@@ -640,9 +640,11 @@ def update_mid_layer_conv_nobias(net, layers, layer_index, data_, dtype, scd_arg
             yps = []
 
             for batch_idx in range(scd_args.updated_conv_ratio):
-                yps.append(net(data[batch_size * batch_idx: batch_size * (batch_idx + 1)], input_=layer))
+                yps.append(net(data[batch_size * batch_idx: batch_size * (batch_idx + 1)],
+                               input_=layer, layer=net.layers[-1]+'_projection'))
             if rest:
-                yps.append(net(data[batch_size * scd_args.updated_conv_ratio:], input_=layer))
+                yps.append(net(data[batch_size * scd_args.updated_conv_ratio:],
+                               input_=layer, layer=net.layers[-1]+'_projection'))
             yp = torch.cat(yps, dim=0)
         else:
             yp = net(data, input_=layer)
@@ -751,7 +753,8 @@ def update_mid_layer_conv_nobias(net, layers, layer_index, data_, dtype, scd_arg
                 del new_projection
                 projection = projection.transpose_(0, 1).reshape(
                     (-1, projection.size(2), height, width))
-                yp = net(projection, input_=layer + '_ap').reshape((n_w, n_r, -1))
+                yp = net(projection, input_=layer + '_ap',
+                         layer=net.layers[-1]+'_projection').reshape((n_w, n_r, -1))
                 del projection
                 yp = yp.transpose_(0, 1).reshape((n_r, n_w,  -1))
                 yps.append(yp)

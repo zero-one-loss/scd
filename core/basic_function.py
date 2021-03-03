@@ -16,12 +16,12 @@ def evaluation(data_loader, use_cuda, device, dtype, net, key, criterion):
             if use_cuda:
                 data, target = data.type_as(net._modules[list(net._modules.keys())[0]].weight), target.to(device=device)
 
-            yp = net(data)
+            yp = net(data, layer=net.layers[-1]+'_projection')
 
             yps.append(yp)
             label.append(target)
             if yp.size(1) == 1:
-                outputs = yp.round().flatten()
+                outputs = net.signb(yp).round().flatten()
             else:
                 outputs = yp.argmax(dim=1)
 
@@ -58,12 +58,12 @@ def evaluation_text(data_loader, use_cuda, device, dtype, net, key, embedding, c
             data = embedding(data).unsqueeze_(dim=1)
                 # data, target = data.type_as(net._modules[list(net._modules.keys())[0]].weight), target.to(device=device)
 
-            yp = net(data)
+            yp = net(data, layer=net.layers[-1]+'_projection')
             yps.append(yp)
             label.append(target)
 
             if yp.size(1) == 1:
-                outputs = yp.round().flatten()
+                outputs = net.signb(yp).round().flatten()
             else:
                 outputs = yp.argmax(dim=1)
 
