@@ -1,13 +1,11 @@
 import torch
 import os
-import time
-import numpy as np
+
 import sys
-import torch.backends.cudnn as cudnn
-from sklearn.metrics import balanced_accuracy_score, accuracy_score
+
 sys.path.append('..')
 
-from tools import args, load_data, ModelArgs, BalancedBatchSampler
+from tools import args, load_data, get_set, ModelArgs
 from core.lossfunction import *
 from core.cnn01 import *
 
@@ -106,8 +104,13 @@ if normal_noise:
     print(f'train data shape: {train_data.shape}')
 
 if args.cnn:
-    train_data = train_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
-    test_data = test_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+    if scd_args.dataset == 'cifar10':
+        train_data = train_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+        test_data = test_data.reshape((-1, 32, 32, 3)).transpose((0, 3, 1, 2))
+    elif scd_args.dataset == 'stl10':
+        train_data = train_data.reshape((-1, 96, 96, 3)).transpose((0, 3, 1, 2))
+        test_data = test_data.reshape((-1, 96, 96, 3)).transpose((0, 3, 1, 2))
+
 if scd_args.divmean == 1:
     train_data = train_data / 0.5 - 1
     test_data = test_data / 0.5 - 1
@@ -116,7 +119,7 @@ elif scd_args.divmean == 2:
     train_data = train_data - train_data.mean()
     test_data = test_data - train_data.mean()
 
-
+trainset_, testset_ = get_set(data=args.dataset, aug=scd_args.aug, num_classes=scd_args.num_classes)
 
 best_model, val_acc = train_single_cnn01(scd_args, None, None,
-(train_data, test_data, train_label, test_label))
+(train_data, test_data, train_label, test_label), trainset_)

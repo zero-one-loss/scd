@@ -7,7 +7,7 @@ import os
 import sys
 sys.path.append('..')
 from core.cnn import *
-from tools import args
+from tools import args, get_set
 import time
 import numpy as np
 import sys
@@ -33,7 +33,7 @@ save = True if args.save else False
 
 best_acc = 0
 
-batch_size = 256
+batch_size = args.batch_size
 aug = args.aug
 seed = args.seed
 np.random.seed(seed)
@@ -70,24 +70,25 @@ if aug == 0:
 
 print('start normalize')
 
-trainset = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True, transform=train_transform)
-testset = torchvision.datasets.CIFAR10(root=test_dir, train=False, download=True, transform=test_transform)
+# trainset = torchvision.datasets.CIFAR10(root=train_dir, train=True, download=True, transform=train_transform)
+# testset = torchvision.datasets.CIFAR10(root=test_dir, train=False, download=True, transform=test_transform)
+#
+# train_idx = [True if i < args.n_classes else False for i in trainset.targets]
+# test_idx = [True if i < args.n_classes else False for i in testset.targets]
+#
+# trainset.data = trainset.data[train_idx]
+# testset.data = testset.data[test_idx]
+# trainset.targets = [i for i in trainset.targets if i < args.n_classes]
+# testset.targets = [i for i in testset.targets if i < args.n_classes]
 
-train_idx = [True if i < args.n_classes else False for i in trainset.targets]
-test_idx = [True if i < args.n_classes else False for i in testset.targets]
-
-trainset.data = trainset.data[train_idx]
-testset.data = testset.data[test_idx]
-trainset.targets = [i for i in trainset.targets if i < args.n_classes]
-testset.targets = [i for i in testset.targets if i < args.n_classes]
-
+trainset, testset = get_set(data=args.dataset, aug=args.aug, num_classes=args.n_classes)
 train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
 test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True)
 
 # net = Toy3ap1(num_classes=args.n_classes, bias=bool(1-args.no_bias))
 
 # net = Toy3(num_classes=args.n_classes, bias=bool(1-args.no_bias))
-net = arch[args.version](num_classes=10, act='sign', sigmoid=False, softmax=True, scale=1, bias=bool(1-args.no_bias))
+net = arch[args.version](num_classes=args.n_classes, act='sign', sigmoid=False, softmax=True, scale=1, bias=bool(1-args.no_bias))
 criterion = nn.CrossEntropyLoss()
 
 if resume:
@@ -121,7 +122,7 @@ if use_cuda:
 #     weight_decay=0.0005,
 #     nesterov=True
 # )
-optimizer = optim.Adam(net.parameters(), lr=0.01, eps=1e-4 if fp16 else 1e-8)
+optimizer = optim.Adam(net.parameters(), lr=0.001, eps=1e-4 if fp16 else 1e-8)
 # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 def train(epoch):
@@ -219,7 +220,7 @@ def save_features():
 
 def main():
     start_epoch = 1
-    for epoch in range(start_epoch, start_epoch + 100):
+    for epoch in range(start_epoch, start_epoch + args.epoch):
 
         row = {'epoch': str(epoch), 'train_acc': str(train(epoch)), 'test_acc': str(test(epoch))}
         csv_logger.writerow(row)
@@ -266,3 +267,4 @@ if __name__ == '__main__':
     main()
     end_time = time.time()
     print('Cost %.1f seconds' % (end_time - start_time))
+    inference()
